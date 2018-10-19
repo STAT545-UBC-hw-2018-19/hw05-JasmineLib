@@ -2,14 +2,83 @@
 title: "STAT545_hw05_JasmineLib"
 output: github_document
 ---
+cowplot
+gridextratidy
 
 # Homework 5: Factor and Figure Management
+```{r}
+library(gapminder)
+library(tidyverse)
+library(plotly)
+```
 
 
 ### Part 1: Factor Management
 
+Task 1.1: Drop a factor to remove Oceania. Remove unused factor levels. Provide concrete information before and after removing these rows and the number of levels of affected factors.
+explore the effects of arrange()
+explore effects of reordering a factor and try this coupled with arrange() How does this affect figure output?
+```{r}
+str(gapminder)
+gapminder %>% 
+  filter(continent != "Oceania") %>% 
+  ggplot(aes(continent)) + geom_bar() + 
+  scale_x_discrete(drop = FALSE) #shows "hidden factor Oceania"
+
+?fct_infreq()
+
+gapminder$country %>% 
+  filter(continent != "Oceania") %>% 
+  droplevels() %>%  #removes oceania.
+  mutate(country = fct_infreq(gdpPercap, country)) %>% 
+  ggplot(aes(country, gdpPercap)) +
+  geom_point() 
+```
+
 ### Part 2: File I/O
 
+```{r}
+oil_consumption = read_csv(file ="Oil_Consumption_per_capita.csv")
+
+head(oil_consumption)
+
+?saveRDS()
+
+
+oil_consumption_2007 = oil_consumption %>% 
+  select(`Oil Consumption per capita (tonnes per year)`, "2007") %>% 
+  mutate(country = `Oil Consumption per capita (tonnes per year)`, 
+         tonnes_per_capita_2007 = `2007`) %>% 
+  select(country, tonnes_per_capita_2007)
+
+head(oil_consumption_2007)
+
+```
+
+```{r}
+gapminder_2007 = gapminder %>% 
+  filter (year == "2007") %>% 
+  select(country = "country", pop, gdpPercap, continent) #select the population and gdpPercap data for the year 2007. 
+  
+gapminder_2007 %>% 
+  head() %>% 
+  knitr::kable()
+```
+
+```{r}
+gapminder_oil_2007 = left_join(gapminder_2007, oil_consumption_2007, by= "country") %>% 
+  na.omit() 
+
+gapminder_oil_2007
+```
+
+
 ### Part 3: Visualization Design
+ 
+
+
+
+
+
 
 ### More? 
