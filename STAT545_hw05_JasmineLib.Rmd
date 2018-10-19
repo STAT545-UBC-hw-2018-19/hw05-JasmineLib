@@ -12,6 +12,7 @@ library(tidyverse)
 library(plotly)
 library(viridis)
 library(scales)
+library(RColorBrewer)
 #library(dplyr)
 ```
 
@@ -19,36 +20,41 @@ library(scales)
 ### Part 1: Factor Management
 
 Task 1.1: Drop a factor to remove Oceania. Remove unused factor levels. Provide concrete information before and after removing these rows and the number of levels of affected factors.
-explore the effects of arrange()
-explore effects of reordering a factor and try this coupled with arrange() How does this affect figure output?
 ```{r}
+gapminder_no_oceania = gapminder %>% 
+  filter(continent != "Oceania") %>% 
+  droplevels()
+
+str(gapminder_no_oceania$continent)
+str(gapminder_no_oceania$country)
 
 gapminder_highGDP = gapminder %>% 
   filter(gdpPercap > 30000)
 
-levels(gapminder_highGDP$continent)
+str(gapminder_highGDP)
   
 gapminder_highGDP %>% 
   ggplot(aes(continent)) + geom_bar() + 
-  scale_x_discrete(drop = FALSE) #shows "hidden factor Oceania"
+  scale_x_discrete(drop = FALSE)
 
 
-gapminder_highGDP %>% 
-  droplevels() %>%  
-  str()
+gapminder_highGDP = gapminder_highGDP %>% 
+  droplevels()
+
+str(gapminder_highGDP)
 
 
-  
-  #ggplot(aes(country, gdpPercap)) +
-  #geom_point() 
-  
-  gap_america_2007 = gapminder %>% 
-  filter(continent == "Americas", year == 2007)
 
-gap_america_2007 %>% 
-mutate(country = fct_reorder(country, gdpPercap)) %>%
- ggplot(aes(gdpPercap, country)) + geom_point()
+
 ```
+
+
+Conclusion:
+
+| Function  | Continent Factor |   Country Factor |
+| ------------- | ------------- |----------|
+| Filter out Oceania  | 5 continents  |   142 countries     |
+| Drop Levels  | 4 continents |   140 countries     |
 
 
 Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
@@ -65,6 +71,14 @@ gapminder %>%
 
 explore effects of reordering a factor and try this coupled with arrange() How does this affect figure output?
 ```{r}
+gap_america_2007 = gapminder %>% 
+  filter(continent == "Americas" & year == 2007)
+
+gap_america_2007 %>% 
+  mutate(country = fct_reorder(country, gdpPercap)) %>%
+  ggplot(aes(gdpPercap, country)) + geom_point()
+
+
 gap_america_2007 %>% 
   mutate(country = fct_reorder(country, lifeExp)) %>% #want to reorder country. how? order by lifeexp
   arrange(desc(country)) %>% 
@@ -76,9 +90,10 @@ gap_america_2007 %>%
   mutate(country = fct_reorder(country, lifeExp)) %>% 
   ggplot(aes(lifeExp, country)) + geom_point()
 
-gap_relevel = fct_relevel(gap_america_2007$country, "Haiti")
-head(gap_relevel)
+
   
+
+
 ```
 
 ### Part 2: File I/O
@@ -88,15 +103,12 @@ oil_consumption = read_csv(file ="Oil_Consumption_per_capita.csv")
 
 head(oil_consumption)
 
-?saveRDS()
-
 
 oil_consumption_2007 = oil_consumption %>% 
   select(`Oil Consumption per capita (tonnes per year)`, "2007") %>% 
   mutate(country = `Oil Consumption per capita (tonnes per year)`, 
          tonnes_per_capita_2007 = `2007`) %>% 
   select(country, tonnes_per_capita_2007)
-
 
 
 head(oil_consumption_2007)
@@ -108,44 +120,107 @@ gapminder_2007 = gapminder %>%
   filter (year == "2007") %>% 
   select(country = "country", pop, gdpPercap, continent) #select the population and gdpPercap data for the year 2007. 
   
-gapminder_2007 %>% 
-  head() %>% 
-  knitr::kable()
 ```
 
 ```{r}
 gapminder_oil_2007 = left_join(gapminder_2007, oil_consumption_2007, by= "country") %>% 
   na.omit() 
+
+
+
+write.csv(gapminder_oil_2007,  "hw5_gapminder_oil_2007.csv")
+
+str(gapminder_oil_2007)
+#continent factor with 5 levels
+
+gapminder_oil_2007 = gapminder_oil_2007 %>% 
+  mutate(continent = fct_reorder(country, tonnes_per_capita_2007))
+
 gapminder_oil_2007
 
+
+```
+
+
+```{r}
 gapminder_oil_2007 %>% 
   mutate(country = fct_reorder(country, tonnes_per_capita_2007)) %>% 
   ggplot(aes(tonnes_per_capita_2007, country)) + geom_point()
 
 
 
-  
 
 gapminder_oil_2007 %>% 
   ggplot(aes(pop, tonnes_per_capita_2007))+
   geom_point(alpha = 0.33)+
   theme_bw()+
   facet_wrap(~continent)
-
 ```
 
 
-Try out write.csv:
-```{r}
-write.csv(gapminder_oil_2007,  "hw5_gapminder_oil_2007.csv")
-```
+
 
 ### Part 3: Visualization Design
  
 
+Old graph:
+```{r}
+
+ ggplot(gapminder_2007, aes(continent, gdpPercap)) +
+  scale_y_log10(labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+  geom_violin(fill = "darkslategray1", alpha = 0.5) +
+  geom_jitter(alpha = 0.33) +
+  xlab("Continent")+
+  ylab("GDP Per Capita") +
+  ggtitle("GDP Per Capita by Continent in 2007")
+```
+  
+- it's hard to tell visually which continent has a higher mean GDP. I was not able to tell the difference between America vs. Asia, and Europe vs. Oceania. 
+
+New graph: 
+
+```{r}
+display.brewer.all()
+
+
+gapminder_2007 %>% 
+  mutate(continent = fct_reorder(gapminder_2007$continent, gdpPercap)) %>% 
+ ggplot( aes(continent, gdpPercap)) +
+  scale_y_log10(labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+  scale_color_continuous(palette = "Greens") +
+  geom_violin(alpha = 0.5) +
+  geom_jitter(alpha = 0.33) +
+  xlab("Continent")+
+  ylab("GDP Per Capita") +
+  ggtitle("GDP Per Capita by Continent in 2007") +
+  theme_bw() 
+
+
+plot_oilvsgdp = gapminder_oil_2007 %>% 
+  ggplot(aes(gdpPercap, tonnes_per_capita_2007)) + 
+  geom_point(aes(colour = pop)) +
+  scale_x_log10(labels = dollar_format())+
+  scale_colour_distiller(
+    trans="log10",
+    breaks = 10^(1:10),
+    labels = comma_format(),
+    palette = "YlOrRd"
+  ) +
+  scale_y_continuous(breaks = c(0,2,4,6,8,10))+
+  theme_bw()+
+  ggtitle("Tonnes of Oil per Capita by GDP per Capita ")
+
+plot_oilvsgdp
+
+ggplotly(plot_oilvsgdp)
 
 
 
+```
+  
+  
 
+Conclude: There is a trend showing increasing oil usate as GDP per Capita increases. 
+Using the R Colour Distiller, we also notice that countries with a higher population tend towards lower oil usage, while those with a low, or mid-range population size use more oil.
 
 ### More? 
