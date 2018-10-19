@@ -23,22 +23,21 @@ explore the effects of arrange()
 explore effects of reordering a factor and try this coupled with arrange() How does this affect figure output?
 ```{r}
 
+gapminder_highGDP = gapminder %>% 
+  filter(gdpPercap > 30000)
 
-gapminder %>% 
-  filter(continent != "Oceania") %>% 
+levels(gapminder_highGDP$continent)
+  
+gapminder_highGDP %>% 
   ggplot(aes(continent)) + geom_bar() + 
   scale_x_discrete(drop = FALSE) #shows "hidden factor Oceania"
 
-?fct_infreq()
-str(gapminder$country)
 
-gapminder %>% 
-  filter(continent != "Oceania") %>% 
-  droplevels() %>%  #removes oceania.
-  levels()
+gapminder_highGDP %>% 
+  droplevels() %>%  
+  str()
 
 
-  levels(gapminder)
   
   #ggplot(aes(country, gdpPercap)) +
   #geom_point() 
@@ -49,6 +48,37 @@ gapminder %>%
 gap_america_2007 %>% 
 mutate(country = fct_reorder(country, gdpPercap)) %>%
  ggplot(aes(gdpPercap, country)) + geom_point()
+```
+
+
+Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
+```{r}
+gapminder %>% 
+  filter(continent == "Americas" & year == 2007) %>% 
+  arrange(desc(country)) %>% 
+  ggplot(aes(gdpPercap, country)) + geom_point()
+
+
+
+```
+
+
+explore effects of reordering a factor and try this coupled with arrange() How does this affect figure output?
+```{r}
+gap_america_2007 %>% 
+  mutate(country = fct_reorder(country, lifeExp)) %>% #want to reorder country. how? order by lifeexp
+  arrange(desc(country)) %>% 
+  ggplot(aes(lifeExp, country)) + geom_point()
+
+
+gap_america_2007 %>% 
+  arrange(desc(country)) %>% 
+  mutate(country = fct_reorder(country, lifeExp)) %>% 
+  ggplot(aes(lifeExp, country)) + geom_point()
+
+gap_relevel = fct_relevel(gap_america_2007$country, "Haiti")
+head(gap_relevel)
+  
 ```
 
 ### Part 2: File I/O
@@ -104,6 +134,11 @@ gapminder_oil_2007 %>%
 
 ```
 
+
+Try out write.csv:
+```{r}
+write.csv(gapminder_oil_2007,  "hw5_gapminder_oil_2007.csv")
+```
 
 ### Part 3: Visualization Design
  
