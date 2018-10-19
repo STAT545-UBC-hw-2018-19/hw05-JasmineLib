@@ -42,6 +42,31 @@ library(plotly)
     ##     layout
 
 ``` r
+library(viridis)
+```
+
+    ## Loading required package: viridisLite
+
+``` r
+library(scales)
+```
+
+    ## 
+    ## Attaching package: 'scales'
+
+    ## The following object is masked from 'package:viridis':
+    ## 
+    ##     viridis_pal
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     discard
+
+    ## The following object is masked from 'package:readr':
+    ## 
+    ##     col_factor
+
+``` r
 #library(dplyr)
 ```
 
@@ -60,14 +85,39 @@ gapminder %>%
 
 ``` r
 ?fct_infreq()
+str(gapminder$country)
+```
 
-#gapminder %>% 
- # filter(continent != "Oceania") %>% 
-  #droplevels() %>%  #removes oceania.
-  #mutate(country = fct_infreq(gdpPercap, country)) %>% 
+    ##  Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
+
+``` r
+gapminder %>% 
+  filter(continent != "Oceania") %>% 
+  droplevels() %>%  #removes oceania.
+  levels()
+```
+
+    ## NULL
+
+``` r
+  levels(gapminder)
+```
+
+    ## NULL
+
+``` r
   #ggplot(aes(country, gdpPercap)) +
   #geom_point() 
+  
+  gap_america_2007 = gapminder %>% 
+  filter(continent == "Americas", year == 2007)
+
+gap_america_2007 %>% 
+mutate(country = fct_reorder(country, gdpPercap)) %>%
+ ggplot(aes(gdpPercap, country)) + geom_point()
 ```
+
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-2-2.png)
 
 ### Part 2: File I/O
 
@@ -114,6 +164,8 @@ oil_consumption_2007 = oil_consumption %>%
   mutate(country = `Oil Consumption per capita (tonnes per year)`, 
          tonnes_per_capita_2007 = `2007`) %>% 
   select(country, tonnes_per_capita_2007)
+
+
 
 head(oil_consumption_2007)
 ```
@@ -173,6 +225,24 @@ gapminder_oil_2007
     ##  9 Chile        16284741    13172. Americas                  0.970 
     ## 10 China      1318683096     4959. Asia                      0.275 
     ## # ... with 43 more rows
+
+``` r
+gapminder_oil_2007 %>% 
+  mutate(country = fct_reorder(country, tonnes_per_capita_2007)) %>% 
+  ggplot(aes(country,tonnes_per_capita_2007)) + geom_point()
+```
+
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+``` r
+gapminder_oil_2007 %>% 
+  ggplot(aes(pop, tonnes_per_capita_2007))+
+  geom_point(alpha = 0.33)+
+  theme_bw()+
+  facet_wrap(~continent)
+```
+
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-5-2.png)
 
 ### Part 3: Visualization Design
 

@@ -10,6 +10,9 @@ gridextratidy
 library(gapminder)
 library(tidyverse)
 library(plotly)
+library(viridis)
+library(scales)
+#library(dplyr)
 ```
 
 
@@ -19,20 +22,33 @@ Task 1.1: Drop a factor to remove Oceania. Remove unused factor levels. Provide 
 explore the effects of arrange()
 explore effects of reordering a factor and try this coupled with arrange() How does this affect figure output?
 ```{r}
-str(gapminder)
+
+
 gapminder %>% 
   filter(continent != "Oceania") %>% 
   ggplot(aes(continent)) + geom_bar() + 
   scale_x_discrete(drop = FALSE) #shows "hidden factor Oceania"
 
 ?fct_infreq()
+str(gapminder$country)
 
-gapminder$country %>% 
+gapminder %>% 
   filter(continent != "Oceania") %>% 
   droplevels() %>%  #removes oceania.
-  mutate(country = fct_infreq(gdpPercap, country)) %>% 
-  ggplot(aes(country, gdpPercap)) +
-  geom_point() 
+  levels()
+
+
+  levels(gapminder)
+  
+  #ggplot(aes(country, gdpPercap)) +
+  #geom_point() 
+  
+  gap_america_2007 = gapminder %>% 
+  filter(continent == "Americas", year == 2007)
+
+gap_america_2007 %>% 
+mutate(country = fct_reorder(country, gdpPercap)) %>%
+ ggplot(aes(gdpPercap, country)) + geom_point()
 ```
 
 ### Part 2: File I/O
@@ -51,6 +67,8 @@ oil_consumption_2007 = oil_consumption %>%
          tonnes_per_capita_2007 = `2007`) %>% 
   select(country, tonnes_per_capita_2007)
 
+
+
 head(oil_consumption_2007)
 
 ```
@@ -68,8 +86,22 @@ gapminder_2007 %>%
 ```{r}
 gapminder_oil_2007 = left_join(gapminder_2007, oil_consumption_2007, by= "country") %>% 
   na.omit() 
-
 gapminder_oil_2007
+
+gapminder_oil_2007 %>% 
+  mutate(country = fct_reorder(country, tonnes_per_capita_2007)) %>% 
+  ggplot(aes(tonnes_per_capita_2007, country)) + geom_point()
+
+
+
+  
+
+gapminder_oil_2007 %>% 
+  ggplot(aes(pop, tonnes_per_capita_2007))+
+  geom_point(alpha = 0.33)+
+  theme_bw()+
+  facet_wrap(~continent)
+
 ```
 
 
