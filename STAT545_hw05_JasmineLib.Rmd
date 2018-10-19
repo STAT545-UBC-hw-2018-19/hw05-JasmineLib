@@ -180,8 +180,6 @@ Old graph:
 New graph: 
 
 ```{r}
-display.brewer.all()
-
 
 gapminder_2007 %>% 
   mutate(continent = fct_reorder(gapminder_2007$continent, gdpPercap)) %>% 
@@ -202,7 +200,7 @@ plot_oilvsgdp = gapminder_oil_2007 %>%
   scale_x_log10(labels = dollar_format())+
   scale_colour_distiller(
     trans="log10",
-    breaks = 10^(1:10),
+    breaks = 10^(0:9),
     labels = comma_format(),
     palette = "YlOrRd"
   ) +
@@ -213,7 +211,7 @@ plot_oilvsgdp = gapminder_oil_2007 %>%
 plot_oilvsgdp
 
 ggplotly(plot_oilvsgdp)
-
+  #geom_text(aes(label = country),  hjust = 1, vjust = 2, font = 4, angle = 90))
 
 
 ```
@@ -222,5 +220,17 @@ ggplotly(plot_oilvsgdp)
 
 Conclude: There is a trend showing increasing oil usate as GDP per Capita increases. 
 Using the R Colour Distiller, we also notice that countries with a higher population tend towards lower oil usage, while those with a low, or mid-range population size use more oil.
+
+
+Create a new factor:
+```{r}
+gapminder_2007%>% 
+  filter(country == "Canada" | country == "Brazil" |country == "France")
+  
+
+
+sport = factor(c("Hockey", "Capoeira", "Soccer"))
+```
+
 
 ### More? 
