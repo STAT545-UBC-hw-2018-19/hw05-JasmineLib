@@ -10,7 +10,6 @@ Homework 5: Factor and Figure Management
 suppressPackageStartupMessages(library(gapminder))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(plotly))
-#suppressPackageStartupMessages(library(viridis))
 suppressPackageStartupMessages(library(scales))
 suppressPackageStartupMessages(library(RColorBrewer))
 suppressPackageStartupMessages(library(gridExtra))
@@ -59,7 +58,7 @@ Conclusion:
 | Filter out Oceania | 5 continents               | 142 countries            |
 | Drop Levels        | 4 continents               | 140 countries            |
 
-#### Explore the effects of arrange().
+#### Explore the effects of arrange( ).
 
 -   Does merely arranging the data have any effect on, say, a figure?
 
@@ -92,7 +91,7 @@ gapminder %>%
   labs(x = "Life Expectancy (Years)", y = "Country")
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/Arrange%20Effects-1.png)
 
 ``` r
 #using arrange(desc())
@@ -106,7 +105,7 @@ gapminder %>%
   labs(x = "Life Expectancy (Years)", y = "Country")
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/Arrange%20Effects-2.png)
 
 Conclude:
 - using arrange(desc()) works when making tables
@@ -135,7 +134,7 @@ gap_america_2007 %>%
        y = "Country")
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/Reorder%20Factor-1.png)
 
 ``` r
 #arrange first, then fct_reorder:
@@ -152,15 +151,14 @@ gap_america_2007 %>%
        y = "Country")
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-4-2.png) Conclude:
-- The fct\_reorder function was to sort by order of life expectancy, while arrange, by population size.
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/Reorder%20Factor-2.png) Conclude:
+- Succesfully sorted by life expectancy - The fct\_reorder function sorted by order of life expectancy, while arrange tried to sort by population size.
 - when using both the arrange() function and the fct\_reorder() function, the fct\_reorder function takes precedence
-- This was the case regardless of the order in which the two functions are called
-- Canada has the highest life expectancy out of all the Americas, while Haiti has the lowest.
+- This was the case regardless of the order in which the two functions are called (both graphs are the same) - Canada has the highest life expectancy out of all the Americas, while Haiti has the lowest.
 
 ### Part 2: File I/O
 
--   Explore read\_csv():
+-   Explore read\_csv( ):
 -   Used data downloaded from gapminder.org/data to read in a file
 -   upload data here
 
@@ -197,7 +195,7 @@ head(oil_consumption_2007) %>%
 | Azerbaijan |          0.5096921|
 | Bangladesh |          0.0315428|
 
-Next, make a corresponding gapminder subset which we will use to join:
+-   Next, make a corresponding gapminder subset which we will use to join:
 
 ``` r
 gapminder_2007 = gapminder %>% 
@@ -243,7 +241,7 @@ Conclude:
 ``` r
 #first make the country variable into a factor (in order to look at how factors are affected in I/O)
 gapminder_oil_2007$country = as.factor(gapminder_oil_2007$country)
-#now we check that this is a factor.
+#now we check that this is indeed a factor.
 str(gapminder_oil_2007$country) 
 ```
 
@@ -318,7 +316,7 @@ Conclude:
   ggtitle("GDP Per Capita by Continent in 2007")
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 -   In this old graph it's hard to tell visually which continent has a higher mean GDP
 -   I was not able to tell the difference between America vs. Asia, and Europe vs. Oceania.
@@ -341,14 +339,17 @@ gdpPercap_by_continent_updated = gapminder_2007%>%
 gdpPercap_by_continent_updated
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 Changes:
 - nicer colours
+- updated theme
 - y-axis easier to read
 - Mean GDP per capita for each continent in ascending order
 
 ### Part 3: Visualization Design Continued
+
+Other plots that we have learned to make:
 
 ``` r
 plot_oilvsgdp = gapminder_oil_2007 %>% 
@@ -369,7 +370,7 @@ plot_oilvsgdp = gapminder_oil_2007 %>%
 plot_oilvsgdp
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 #Table showing the 5 countries with the lowest oil usage per capita in 2007
@@ -400,7 +401,7 @@ grid.arrange(top="Worldwide Oil Use 2007", plot_oilvsgdp, arrangeGrob(max_oil_tb
              heights=c(2.5/4,1.5/4),ncol = 1)
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-11-2.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
 Conclude:
 - There is a trend showing increasing oil usate as GDP per Capita increases.
@@ -411,13 +412,13 @@ Conclude:
 
 -   Refer to file called "plotly\_hw05\_JasmineLib.Rmd" to run the plotly graph
 
-Part 4: Writing figures to file
+### Part 4: Writing figures to file
 
 ``` r
 plot_oilvsgdp
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ``` r
 ggsave("tonnes_per_capita_vs_gdpPercap.jpeg", scale = 1, width = 6, height = 4, units = "in")
@@ -425,7 +426,7 @@ ggsave("tonnes_per_capita_vs_gdpPercap.jpeg", scale = 1, width = 6, height = 4, 
 gdpPercap_by_continent_updated
 ```
 
-![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-12-2.png)
+![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
 ``` r
 ggsave("gdpPercap_by_continent_updated_plot.jpeg", scale = 1, width = 6, height = 4, units = "in")

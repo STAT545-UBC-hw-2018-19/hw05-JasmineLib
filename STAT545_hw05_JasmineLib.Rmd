@@ -304,7 +304,8 @@ Conclude:
 ###Self-contained plotly code:  
 - Refer to file called "plotly_hw05_JasmineLib.Rmd" to run the plotly graph
 
-###Part 4: Writing figures to file
+###Part 4: Writing figures to file  
+
 ```{r}
 plot_oilvsgdp
 ggsave("tonnes_per_capita_vs_gdpPercap.jpeg", scale = 1, width = 6, height = 4, units = "in")
