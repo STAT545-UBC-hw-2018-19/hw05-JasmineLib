@@ -1,19 +1,21 @@
 ---
 title: "STAT545_hw05_JasmineLib"
+always_allow_html: yes
 output: github_document
+
 ---
 cowplot
 gridextratidy
 
 # Homework 5: Factor and Figure Management
 ```{r}
-library(gapminder)
-library(tidyverse)
-library(plotly)
-library(viridis)
-library(scales)
-library(RColorBrewer)
-#library(dplyr)
+suppressPackageStartupMessages(library(gapminder))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(viridis))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(RColorBrewer))
+
 ```
 
 
@@ -21,27 +23,16 @@ library(RColorBrewer)
 
 Task 1.1: Drop a factor to remove Oceania. Remove unused factor levels. Provide concrete information before and after removing these rows and the number of levels of affected factors.
 ```{r}
+
+levels(gapminder$continent)
+nlevels(gapminder$country)
+
 gapminder_no_oceania = gapminder %>% 
   filter(continent != "Oceania") %>% 
   droplevels()
 
-str(gapminder_no_oceania$continent)
-str(gapminder_no_oceania$country)
-
-gapminder_highGDP = gapminder %>% 
-  filter(gdpPercap > 30000)
-
-str(gapminder_highGDP)
-  
-gapminder_highGDP %>% 
-  ggplot(aes(continent)) + geom_bar() + 
-  scale_x_discrete(drop = FALSE)
-
-
-gapminder_highGDP = gapminder_highGDP %>% 
-  droplevels()
-
-str(gapminder_highGDP)
+levels(gapminder_no_oceania$continent)
+nlevels(gapminder_no_oceania$country)
 
 
 
@@ -75,34 +66,43 @@ gap_america_2007 = gapminder %>%
   filter(continent == "Americas" & year == 2007)
 
 gap_america_2007 %>% 
-  mutate(country = fct_reorder(country, gdpPercap)) %>%
-  ggplot(aes(gdpPercap, country)) + geom_point()
-
-
-gap_america_2007 %>% 
   mutate(country = fct_reorder(country, lifeExp)) %>% #want to reorder country. how? order by lifeexp
   arrange(desc(country)) %>% 
-  ggplot(aes(lifeExp, country)) + geom_point()
+  ggplot(aes(lifeExp, country)) + 
+  geom_point(color = "dodgerblue3") +
+  theme_bw() +
+  ggtitle("Life Expectancy in the Americas in 2007") +
+  labs(x = "Life Expectancy (Years)", 
+       y = "Country")
 
 
 gap_america_2007 %>% 
   arrange(desc(country)) %>% 
   mutate(country = fct_reorder(country, lifeExp)) %>% 
-  ggplot(aes(lifeExp, country)) + geom_point()
+  ggplot(aes(lifeExp, country)) + 
+  geom_point() +
+  geom_point(color = "dodgerblue3") +
+  theme_bw() +
+  ggtitle("Life Expectancy in the Americas in 2007") +
+  labs(x = "Life Expectancy (Years)", 
+       y = "Country")
 
 
   
 
 
 ```
+Conclude:
+- when using both the arrange() function and the fct_reorder() function, the fct_reorder function takes precedence, even when arrange() is called second.
+- Canada has the highest life expectancy out of all the Americas, while Haiti has the lowest.
+
+
 
 ### Part 2: File I/O
-
+Explore read_csv(): 
+Use data downloaded from gapminder.org/data
 ```{r}
 oil_consumption = read_csv(file ="Oil_Consumption_per_capita.csv")
-
-head(oil_consumption)
-
 
 oil_consumption_2007 = oil_consumption %>% 
   select(`Oil Consumption per capita (tonnes per year)`, "2007") %>% 
@@ -110,16 +110,15 @@ oil_consumption_2007 = oil_consumption %>%
          tonnes_per_capita_2007 = `2007`) %>% 
   select(country, tonnes_per_capita_2007)
 
-
-head(oil_consumption_2007)
+head(oil_consumption_2007) %>% 
+  knitr::kable(col.names = c("Country ", "Tonnes per Capita") )
 
 ```
 
 ```{r}
 gapminder_2007 = gapminder %>% 
   filter (year == "2007") %>% 
-  select(country = "country", pop, gdpPercap, continent) #select the population and gdpPercap data for the year 2007. 
-  
+  select(country = "country", pop, gdpPercap, continent) 
 ```
 
 ```{r}
@@ -127,14 +126,25 @@ gapminder_oil_2007 = left_join(gapminder_2007, oil_consumption_2007, by= "countr
   na.omit() 
 
 
-
-write.csv(gapminder_oil_2007,  "hw5_gapminder_oil_2007.csv")
-
 str(gapminder_oil_2007)
 #continent factor with 5 levels
 
-gapminder_oil_2007 = gapminder_oil_2007 %>% 
-  mutate(continent = fct_reorder(country, tonnes_per_capita_2007))
+gapminder_oil_2007 %>% 
+  ggplot(aes(continent, tonnes_per_capita_2007)) + geom_boxplot()
+
+gapminder_oil_2007$continent = fct_relevel(gapminder_oil_2007$continent, "Americas")
+
+write.csv(gapminder_oil_2007,  "hw5_gapminder_oil_2007.csv")
+
+gapminder_oil_2007 %>% 
+  ggplot(aes(continent, tonnes_per_capita_2007), fill =continent ) + 
+  geom_boxplot() +
+  geom_jitter(alpha = 0.5)+
+  scale_fill_brewer(palette="BuPu")
+  
+
+
+
 
 gapminder_oil_2007
 
@@ -153,8 +163,7 @@ gapminder_oil_2007 %>%
 gapminder_oil_2007 %>% 
   ggplot(aes(pop, tonnes_per_capita_2007))+
   geom_point(alpha = 0.33)+
-  theme_bw()+
-  facet_wrap(~continent)
+  theme_bw()
 ```
 
 
@@ -224,12 +233,12 @@ Using the R Colour Distiller, we also notice that countries with a higher popula
 
 Create a new factor:
 ```{r}
-gapminder_2007%>% 
-  filter(country == "Canada" | country == "Brazil" |country == "France")
+gapminder_2007_sport = gapminder_2007%>% 
+  filter(country == "Brazil" | country == "Canada" |country == "France") %>% 
+  mutate(sport = factor(c("Capoeira","Hockey", "Soccer")))
   
-
-
-sport = factor(c("Hockey", "Capoeira", "Soccer"))
+levels(gapminder_2007_sport$sport)
+str(gapminder_2007_sport)
 ```
 
 
