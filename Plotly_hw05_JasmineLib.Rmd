@@ -1,0 +1,48 @@
+---
+title: "Plotly_hw05_JasmineLib"
+output: html_document
+---
+
+Self-contained code chunk for plotly graphic marking:
+- made a self-contained code chunk according to instructions provided by teaching team in an internal issue [discussion](https://github.com/STAT545-UBC/Discussion-Internal/issues/46)
+
+
+```{r}
+suppressPackageStartupMessages(library(gapminder))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(viridis))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(RColorBrewer))
+
+oil_consumption = read_csv(file ="Oil_Consumption_per_capita.csv")
+
+oil_consumption_2007 = oil_consumption %>% 
+  select(`Oil Consumption per capita (tonnes per year)`, "2007") %>% 
+  mutate(country = `Oil Consumption per capita (tonnes per year)`, 
+         tonnes_per_capita_2007 = `2007`) %>% 
+  select(country, tonnes_per_capita_2007)
+
+gapminder_2007 = gapminder %>% 
+  filter (year == "2007") %>% 
+  select(country = "country", pop, gdpPercap, continent, lifeExp) 
+
+gapminder_oil_2007 = left_join(gapminder_2007, oil_consumption_2007, by= "country") %>% 
+  na.omit() 
+
+plot_oilvsgdp = gapminder_oil_2007 %>% 
+  ggplot(aes(gdpPercap, tonnes_per_capita_2007)) + 
+  geom_point(aes(colour = pop)) +
+  scale_x_log10(labels = dollar_format())+
+  scale_colour_distiller(
+    trans="log10",
+    breaks = 10^(0:9),
+    labels = comma_format(),
+    palette = "YlOrRd"
+  ) +
+  scale_y_continuous(breaks = c(0,2,4,6,8,10))+
+  theme_bw()+
+  ggtitle("Tonnes of Oil per Capita by GDP per Capita ")
+
+ggplotly(plot_oilvsgdp)
+```
