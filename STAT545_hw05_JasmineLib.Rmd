@@ -4,8 +4,6 @@ always_allow_html: yes
 output: github_document
 
 ---
-cowplot
-gridextratidy
 
 # Homework 5: Factor and Figure Management
 ```{r}
@@ -298,8 +296,11 @@ grid.arrange(top="Worldwide Oil Use 2007", plot_oilvsgdp, arrangeGrob(max_oil_tb
 Conclude:   
 - There is a trend showing increasing oil usate as GDP per Capita increases.   
 - Using the R Colour Distiller, we also notice that countries with a higher population tend towards lower oil usage    
-- Countries with a low, or mid-range population size appear to use more oil.
-- a plotly graph would be useful for a user to zoom in and see which countries are where.
+- Countries with a low, or mid-range population size appear to use more oil.  
+- a plotly graph would be useful for a user to scroll/hover and see which countries are where.
+- plotly can also be useful for being able to zoom in or out to observe trends in local groups of data points.  
+- however, ggplot has its advantages, including the fact that it can be rendered in .md files, whereas so far, I have only been able to use plotly in .html files.
+
 
 ###Self-contained plotly code:  
 - Refer to file called "plotly_hw05_JasmineLib.Rmd" to run the plotly graph
