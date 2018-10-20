@@ -417,7 +417,6 @@ Conclude:
 ``` r
 plot_oilvsgdp
 ```
-
 ![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ``` r
@@ -428,10 +427,13 @@ gdpPercap_by_continent_updated
 
 ![](STAT545_hw05_JasmineLib_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
+
 ``` r
 ggsave("gdpPercap_by_continent_updated_plot.jpeg", scale = 1, width = 6, height = 4, units = "in")
 ```
+![](https://github.com/STAT545-UBC-students/hw05-JasmineLib/blob/master/tonnes_per_capita_vs_gdpPercap.jpeg)
 
+![](https://github.com/STAT545-UBC-students/hw05-JasmineLib/blob/master/gdpPercap_by_continent_updated_plot.jpeg)
 ### Bonus - Creating a new factor:
 
 ``` r
