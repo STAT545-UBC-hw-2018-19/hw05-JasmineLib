@@ -3,8 +3,8 @@ hw05-JasmineLib created by GitHub Classroom
 
 This is the final homework submission for STAT 545! 
   
-The .md file can be found [here]()  
-the .Rmd file can be found [here]()
+The .md file can be found [here](https://github.com/STAT545-UBC-students/hw05-JasmineLib/blob/master/STAT545_hw05_JasmineLib.md)  
+the .Rmd file can be found [here](https://github.com/STAT545-UBC-students/hw05-JasmineLib/blob/master/STAT545_hw05_JasmineLib.Rmd)
 
 As per the instructions in an internal [issue](https://github.com/STAT545-UBC/Discussion-Internal/issues/46), I have linked a separate file for the plotly graphic  
 The .Rmd file can be found [here](https://github.com/STAT545-UBC-students/hw05-JasmineLib/blob/master/Plotly_hw05_JasmineLib.Rmd)  
